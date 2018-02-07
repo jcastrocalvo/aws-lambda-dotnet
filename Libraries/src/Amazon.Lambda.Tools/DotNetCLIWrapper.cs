@@ -23,16 +23,18 @@ namespace Amazon.Lambda.Tools
             this._workingDirectory = workingDirectory;
         }
 
-        /// <summary>
-        /// Generates deployment manifest for staged content
-        /// </summary>
-        /// <param name="defaults"></param>
-        /// <param name="projectLocation"></param>
-        /// <param name="outputLocation"></param>
-        /// <param name="targetFramework"></param>
-        /// <param name="configuration"></param>
-        /// <param name="deploymentTargetPackageStoreManifestContent"></param>
-        public int Publish(LambdaToolsDefaults defaults, string projectLocation, string outputLocation, string targetFramework, string configuration, string msbuildParameters, string deploymentTargetPackageStoreManifestContent)
+	    /// <summary>
+	    /// Generates deployment manifest for staged content
+	    /// </summary>
+	    /// <param name="defaults"></param>
+	    /// <param name="projectLocation"></param>
+	    /// <param name="outputLocation"></param>
+	    /// <param name="targetFramework"></param>
+	    /// <param name="configuration"></param>
+	    /// <param name="runtimes"></param>
+	    /// <param name="msbuildParameters"></param>
+	    /// <param name="deploymentTargetPackageStoreManifestContent"></param>
+	    public int Publish(LambdaToolsDefaults defaults, string projectLocation, string outputLocation, string targetFramework, string configuration, string runtimes, string msbuildParameters, string deploymentTargetPackageStoreManifestContent)
         {
             if (Directory.Exists(outputLocation))
             {
@@ -81,6 +83,11 @@ namespace Amazon.Lambda.Tools
                 arguments.Append($" --framework \"{targetFramework}\"");
             }
 
+			if(!string.IsNullOrEmpty(runtimes))
+			{
+				arguments.Append($" --runtime \"{runtimes}\"");
+			}
+
             if (!string.IsNullOrEmpty(msbuildParameters))
             {
                 arguments.Append($" {msbuildParameters}");
@@ -93,9 +100,10 @@ namespace Amazon.Lambda.Tools
 
                 // If you set the runtime linux-x64 it will trim out the Windows and Mac OS specific dependencies but Razor view precompilation
                 // will not run. So only do this packaging optimization if there are no Razor views.
-                if (Directory.GetFiles(fullProjectLocation, "*.cshtml", SearchOption.AllDirectories).Length == 0)
+                if (Directory.GetFiles(fullProjectLocation, "*.cshtml", SearchOption.AllDirectories).Length == 0 
+					&& string.IsNullOrWhiteSpace(runtimes))
                 {
-                    arguments.Append(" -r linux-x64 --self-contained false /p:PreserveCompilationContext=false");
+//                    arguments.Append(" -r linux-x64 --self-contained false /p:PreserveCompilationContext=false");
                 }
 
                 // If we have a manifest of packages already deploy in target deployment environment then write it to disk and add the 
@@ -126,7 +134,7 @@ namespace Amazon.Lambda.Tools
                     return;
                 _logger?.WriteLine("... publish: " + e.Data);
             });
-
+			_logger.WriteLine(psi.Arguments);
             int exitCode;
             using (var proc = new Process())
             {

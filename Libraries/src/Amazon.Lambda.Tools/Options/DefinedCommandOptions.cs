@@ -75,6 +75,15 @@ namespace Amazon.Lambda.Tools.Options
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "Target framework to compile, for example netcoreapp2.0",
             };
+		public static readonly CommandOption ARGUMENT_RUNTIMES =
+            new CommandOption
+            {
+                Name = "runtimes",
+                ShortSwitch = "-r",
+                Switch = "--runtimes",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "Target runtime environment, for example linux-x64",
+            };
         public static readonly CommandOption ARGUMENT_MSBUILD_PARAMETERS =
             new CommandOption
             {

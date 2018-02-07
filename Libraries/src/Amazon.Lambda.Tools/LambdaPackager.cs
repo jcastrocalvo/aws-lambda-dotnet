@@ -30,20 +30,22 @@ namespace Amazon.Lambda.Tools
             { "netcoreapp1.1", Version.Parse("1.6.1") }
         };
 
-        /// <summary>
-        /// Execute the dotnet publish command and zip up the resulting publish folder.
-        /// </summary>
-        /// <param name="defaults"></param>
-        /// <param name="logger"></param>
-        /// <param name="workingDirectory"></param>
-        /// <param name="projectLocation"></param>
-        /// <param name="targetFramework"></param>
-        /// <param name="configuration"></param>
-        /// <param name="disableVersionCheck"></param>
-        /// <param name="publishLocation"></param>
-        /// <param name="zipArchivePath"></param>
-        public static bool CreateApplicationBundle(LambdaToolsDefaults defaults, IToolLogger logger, string workingDirectory, 
-            string projectLocation, string configuration, string targetFramework, string msbuildParameters, bool disableVersionCheck,
+	    /// <summary>
+	    /// Execute the dotnet publish command and zip up the resulting publish folder.
+	    /// </summary>
+	    /// <param name="defaults"></param>
+	    /// <param name="logger"></param>
+	    /// <param name="workingDirectory"></param>
+	    /// <param name="projectLocation"></param>
+	    /// <param name="targetFramework"></param>
+	    /// <param name="configuration"></param>
+	    /// <param name="runtimes"></param>
+	    /// <param name="msbuildParameters"></param>
+	    /// <param name="disableVersionCheck"></param>
+	    /// <param name="publishLocation"></param>
+	    /// <param name="zipArchivePath"></param>
+	    public static bool CreateApplicationBundle(LambdaToolsDefaults defaults, IToolLogger logger, string workingDirectory, 
+            string projectLocation, string configuration, string targetFramework, string runtimes, string msbuildParameters, bool disableVersionCheck,
             out string publishLocation, ref string zipArchivePath)
         {
             string lambdaRuntimePackageStoreManifestContent = null;
@@ -56,7 +58,7 @@ namespace Amazon.Lambda.Tools
 
             publishLocation = Utilities.DeterminePublishLocation(workingDirectory, projectLocation, configuration, targetFramework);
             logger?.WriteLine("Executing publish command");
-            if (cli.Publish(defaults, projectLocation, publishLocation, targetFramework, configuration, msbuildParameters, lambdaRuntimePackageStoreManifestContent) != 0)
+            if (cli.Publish(defaults, projectLocation, publishLocation, targetFramework, configuration, runtimes, msbuildParameters, lambdaRuntimePackageStoreManifestContent) != 0)
                 return false;
 
             var buildLocation = Utilities.DetermineBuildLocation(workingDirectory, projectLocation, configuration, targetFramework);

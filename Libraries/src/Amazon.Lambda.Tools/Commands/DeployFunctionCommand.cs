@@ -42,6 +42,7 @@ namespace Amazon.Lambda.Tools.Commands
             DefinedCommandOptions.ARGUMENT_CONFIGURATION,
             DefinedCommandOptions.ARGUMENT_FRAMEWORK,
             DefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS,
+			DefinedCommandOptions.ARGUMENT_RUNTIMES,
             DefinedCommandOptions.ARGUMENT_PACKAGE,
             DefinedCommandOptions.ARGUMENT_FUNCTION_NAME,
             DefinedCommandOptions.ARGUMENT_FUNCTION_DESCRIPTION,
@@ -69,6 +70,7 @@ namespace Amazon.Lambda.Tools.Commands
         public string TargetFramework { get; set; }
         public string Package { get; set; }
         public string MSBuildParameters { get; set; }
+		public string Runtimes { get; set; }
 
         public string S3Bucket { get; set; }
         public string S3Prefix { get; set; }
@@ -116,7 +118,8 @@ namespace Amazon.Lambda.Tools.Commands
                 this.PersistConfigFile = tuple.Item2.BoolValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK.Switch)) != null)
                 this.DisableVersionCheck = tuple.Item2.BoolValue;
-
+	        if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_RUNTIMES.Switch)) != null)
+		        this.Runtimes = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS.Switch)) != null)
                 this.MSBuildParameters = tuple.Item2.StringValue;
 
@@ -143,12 +146,13 @@ namespace Amazon.Lambda.Tools.Commands
                 {
                     string configuration = this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, true);
                     string targetFramework = this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, true);
+	                string runtimes = this.GetStringValueOrDefault(this.Runtime, DefinedCommandOptions.ARGUMENT_RUNTIMES, false);
                     string msbuildParameters = this.GetStringValueOrDefault(this.MSBuildParameters, DefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false);
 
                     ValidateTargetFrameworkAndLambdaRuntime();
 
                     bool disableVersionCheck = this.GetBoolValueOrDefault(this.DisableVersionCheck, DefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK, false).GetValueOrDefault();
-                    LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out publishLocation, ref zipArchivePath);
+                    LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, runtimes, msbuildParameters, disableVersionCheck, out publishLocation, ref zipArchivePath);
                     if (string.IsNullOrEmpty(zipArchivePath))
                         return false;
                 }
