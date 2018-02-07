@@ -356,7 +356,18 @@ namespace Amazon.Lambda.Tools
             }
         }
 
-
+	    /// <summary>
+	    /// Finds the first value of the project configuration that is specified
+	    /// </summary>
+	    /// <param name="csprojContent"></param>
+	    /// <param name="section"></param>
+	    /// <param name="configurationContent"></param>
+	    /// <returns></returns>
+	    public static string FindProjectConfiguration(string csprojContent, string section, string configurationContent)
+	    {
+		    XDocument csprojXmlDoc = XDocument.Parse(csprojContent);
+		    return csprojXmlDoc.Root.Elements(section).Elements(configurationContent).FirstOrDefault()?.Value;
+	    }
 
         /// <summary>
         /// A utility method for parsing KeyValue pair CommandOptions.

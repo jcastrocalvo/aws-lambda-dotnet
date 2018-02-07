@@ -100,11 +100,14 @@ namespace Amazon.Lambda.Tools
 
                 // If you set the runtime linux-x64 it will trim out the Windows and Mac OS specific dependencies but Razor view precompilation
                 // will not run. So only do this packaging optimization if there are no Razor views.
-                if (Directory.GetFiles(fullProjectLocation, "*.cshtml", SearchOption.AllDirectories).Length == 0 
-					&& string.IsNullOrWhiteSpace(runtimes))
-                {
-                    arguments.Append(" -r linux-x64 --self-contained false /p:PreserveCompilationContext=false");
-                }
+	            var projectFileContent = File.ReadAllText(
+		            Directory.GetFiles(projectLocation, "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault());
+	            if (Directory.GetFiles(fullProjectLocation, "*.cshtml", SearchOption.AllDirectories).Length == 0 
+	                && !Convert.ToBoolean(Utilities.FindProjectConfiguration(projectFileContent, "PropertyGroup", "PreserveCompilationContext"))
+	                && string.IsNullOrWhiteSpace(runtimes))
+	            {
+		            arguments.Append(" -r linux-x64 --self-contained false /p:PreserveCompilationContext=false");
+	            }
 
                 // If we have a manifest of packages already deploy in target deployment environment then write it to disk and add the 
                 // command line switch
