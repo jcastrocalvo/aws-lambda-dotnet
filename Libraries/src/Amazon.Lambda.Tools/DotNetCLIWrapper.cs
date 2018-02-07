@@ -103,7 +103,7 @@ namespace Amazon.Lambda.Tools
                 if (Directory.GetFiles(fullProjectLocation, "*.cshtml", SearchOption.AllDirectories).Length == 0 
 					&& string.IsNullOrWhiteSpace(runtimes))
                 {
-//                    arguments.Append(" -r linux-x64 --self-contained false /p:PreserveCompilationContext=false");
+                    arguments.Append(" -r linux-x64 --self-contained false /p:PreserveCompilationContext=false");
                 }
 
                 // If we have a manifest of packages already deploy in target deployment environment then write it to disk and add the 
